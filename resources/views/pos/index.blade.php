@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="h-full flex flex-col font-sans">
+<div class="md:h-full flex flex-col font-sans">
 
     {{-- Navbar masquée sur mobile --}}
     <header class="hidden md:flex mb-6 justify-between items-center bg-white p-4 rounded-3xl border-4 border-dark">
@@ -15,22 +15,30 @@
         </div>
     </header>
 
-    <div class="flex-1 grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-2 md:gap-5 pos-grid">
+    {{--
+        Mobile (portrait + paysage) : grille 2 colonnes, hauteur auto par carte (8rem),
+        défilement vertical géré par le <main> du layout.
+        Desktop (md+) : grille 4 colonnes avec 2 rangées fixes qui remplissent la hauteur.
+    --}}
+    <div class="md:flex-1 grid gap-2 md:gap-5
+                grid-cols-2 auto-rows-[8rem]
+                md:grid-cols-4 md:grid-rows-2 md:auto-rows-[unset]
+                pos-grid">
         @foreach($categories as $index => $cat)
             @php
             $map = [
-                'Glaces'         => ['bg' => 'bg-primary', 'img' => 'glace.png',   'span' => 'col-span-1 md:col-span-2 row-span-2'],
-                'Crêpes & Gaufres' => ['bg' => 'bg-accent', 'img' => 'gaufre.png', 'span' => 'col-span-1 md:col-span-2 row-span-1'],
-                'Chichis'        => ['bg' => 'bg-paper',   'img' => 'chichi.png',  'span' => 'col-span-1 row-span-1'],
-                'Boissons'       => ['bg' => 'bg-muted',   'img' => 'boisson.png', 'span' => 'col-span-1 row-span-1'],
-                'Café'           => ['bg' => 'bg-cafe',    'img' => 'cafe.png',    'span' => 'col-span-1 row-span-1'],
-                'Sucettes'       => ['bg' => 'bg-accent',  'img' => 'sucettes.png','span' => 'col-span-1 row-span-1'],
+                'Glaces'           => ['bg' => 'bg-primary', 'img' => 'glace.png',    'span' => 'md:col-span-2 md:row-span-2'],
+                'Crêpes & Gaufres' => ['bg' => 'bg-accent',  'img' => 'gaufre.png',   'span' => 'md:col-span-2'],
+                'Chichis'          => ['bg' => 'bg-paper',   'img' => 'chichi.png',   'span' => ''],
+                'Boissons'         => ['bg' => 'bg-muted',   'img' => 'boisson.png',  'span' => ''],
+                'Café'             => ['bg' => 'bg-cafe',    'img' => 'cafe.png',     'span' => ''],
+                'Sucettes'         => ['bg' => 'bg-accent',  'img' => 'sucettes.png', 'span' => ''],
             ];
-            $data = $map[$cat->name] ?? ['bg' => 'bg-dark', 'img' => 'default.png', 'span' => 'col-span-1 row-span-1'];
+            $data = $map[$cat->name] ?? ['bg' => 'bg-dark', 'img' => 'default.png', 'span' => ''];
             @endphp
 
             <a href="{{ route('pos.show', $cat->id) }}"
-               class="group relative overflow-hidden rounded-2xl md:rounded-[30px] border-4 border-dark transition-all active:translate-y-1 h-full pos-card {{ $data['span'] }} {{ $data['bg'] }}">
+               class="group relative overflow-hidden rounded-2xl md:rounded-[30px] border-4 border-dark transition-all active:translate-y-1 pos-card {{ $data['span'] }} {{ $data['bg'] }}">
 
                 <div class="flex flex-col h-full p-2 md:p-6 bg-white/10 transition-colors group-hover:bg-white/20 rounded-xl md:rounded-[24px]">
                     {{-- Image masquée sur mobile --}}
@@ -39,7 +47,7 @@
                              alt="{{ $cat->name }}"
                              class="w-full h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-110 rounded-lg">
                     </div>
-                    <h2 class="text-base md:text-2xl font-black uppercase tracking-tight text-dark font-titan md:mt-4">{{ $cat->name }}</h2>
+                    <h2 class="text-base md:text-2xl font-black uppercase tracking-tight text-dark font-titan md:mt-4 flex items-center h-full md:h-auto">{{ $cat->name }}</h2>
                 </div>
             </a>
         @endforeach

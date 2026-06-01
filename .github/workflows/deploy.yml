@@ -67,6 +67,8 @@ jobs:
           script_stop: true
           script: |
             set -e
+            cd ~/domains/candys-commande.skopee.fr
+
             if [ -f "artisan" ] && [ -f "composer.json" ]; then
               APP_DIR="."
             elif [ -f "public_html/artisan" ] && [ -f "public_html/composer.json" ]; then

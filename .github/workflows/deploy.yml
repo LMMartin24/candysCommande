@@ -47,40 +47,34 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
-          script_stop: true
           script: |
             set -e
             cd "$HOME/domains/candys-commande.skopee.fr/public_html"
-            echo "1. PWD=$(pwd)"
-            echo "2. .env exists? $([ -f .env ] && echo YES || echo NO)"
-            echo "3. .env.example exists? $([ -f .env.example ] && echo YES || echo NO)"
-            echo "4. artisan exists? $([ -f artisan ] && echo YES || echo NO)"
-            ls -la .env .env.example artisan 2>&1 || true
-            echo "5. php version: $(php -v 2>&1 | head -1)"
-            echo "6. composer version: $(composer --version 2>&1 | head -1)"
+            APP_PATH="$(pwd)"
+            echo "APP_PATH=$APP_PATH"
 
-            if [ ! -f .env ]; then
-              echo "7. Creating .env from .env.example"
-              cp .env.example .env
-              echo "8. Generating app key"
-              php artisan key:generate --force
-            else
-              echo "7. .env already exists, fixing APP_NAME if needed"
-              grep "^APP_NAME=" .env || true
-              sed -i "s/^APP_NAME=\(Candys Commande\)$/APP_NAME=\"\1\"/" .env
-              grep "^APP_NAME=" .env || true
-            fi
+            # Create .env if missing (|| avoids negative condition with set -e)
+            [ -f .env ] || cp .env.example .env
 
-            echo "9. Running composer install"
+            # Fix APP_NAME quoting if unquoted (sed exits 0 even with no match)
+            sed -i 's/^APP_NAME=Candys Commande$/APP_NAME="Candys Commande"/' .env
+
+            # Generate app key only if not already set
+            grep -q "^APP_KEY=base64:" .env || php artisan key:generate --force
+
+            echo "Running composer install..."
             composer install --no-dev --optimize-autoloader --no-interaction
 
-            echo "10. Running migrations"
+            echo "Running migrations..."
             php artisan migrate --force
-            echo "11. Caching config/route/view"
+
+            echo "Caching..."
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
-            echo "12. Linking storage"
+
+            echo "Linking storage..."
             rm -rf public/storage
-            ln -snf "$(pwd)/storage/app/public" "$(pwd)/public/storage"
-            echo "Deploy complete"
+            ln -snf "$APP_PATH/storage/app/public" "$APP_PATH/public/storage"
+
+            echo "✅ Deploy complete"

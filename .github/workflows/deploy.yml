@@ -1,0 +1,80 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install JS dependencies
+        run: npm install
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Deploy via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "app,bootstrap,config,database,public,resources,routes,storage,artisan,composer.json,composer.lock,.env.example,.htaccess"
+          target: "~/domains/candys-commande.skopee.fr/public_html/"
+          overwrite: true
+
+      - name: Run post-deploy commands via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd "$HOME/domains/candys-commande.skopee.fr/public_html"
+            APP_PATH="$(pwd)"
+            echo "APP_PATH=$APP_PATH"
+
+            # Create .env if missing (|| avoids negative condition with set -e)
+            [ -f .env ] || cp .env.example .env
+
+            # Fix APP_NAME quoting if unquoted (sed exits 0 even with no match)
+            sed -i 's/^APP_NAME=Candys Commande$/APP_NAME="Candys Commande"/' .env
+
+            # Generate app key only if not already set
+            grep -q "^APP_KEY=base64:" .env || php artisan key:generate --force
+
+            echo "Running composer install..."
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            echo "Running migrations..."
+            php artisan migrate --force
+
+            echo "Caching..."
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            echo "Linking storage..."
+            rm -rf public/storage
+            ln -snf "$APP_PATH/storage/app/public" "$APP_PATH/public/storage"
+
+            echo "✅ Deploy complete"

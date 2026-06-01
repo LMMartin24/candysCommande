@@ -51,23 +51,36 @@ jobs:
           script: |
             set -e
             cd "$HOME/domains/candys-commande.skopee.fr/public_html"
-            APP_PATH="$(pwd)"
-            echo "APP_PATH=$APP_PATH"
+            echo "1. PWD=$(pwd)"
+            echo "2. .env exists? $([ -f .env ] && echo YES || echo NO)"
+            echo "3. .env.example exists? $([ -f .env.example ] && echo YES || echo NO)"
+            echo "4. artisan exists? $([ -f artisan ] && echo YES || echo NO)"
+            ls -la .env .env.example artisan 2>&1 || true
+            echo "5. php version: $(php -v 2>&1 | head -1)"
+            echo "6. composer version: $(composer --version 2>&1 | head -1)"
 
             if [ ! -f .env ]; then
+              echo "7. Creating .env from .env.example"
               cp .env.example .env
+              echo "8. Generating app key"
               php artisan key:generate --force
             else
-              # Fix APP_NAME if unquoted (contains space without quotes)
-              sed -i 's/^APP_NAME=\([^"]\+[[:space:]]\+[^"]\+\)$/APP_NAME="\1"/' .env
+              echo "7. .env already exists, fixing APP_NAME if needed"
+              grep "^APP_NAME=" .env || true
+              sed -i "s/^APP_NAME=\(Candys Commande\)$/APP_NAME=\"\1\"/" .env
+              grep "^APP_NAME=" .env || true
             fi
 
+            echo "9. Running composer install"
             composer install --no-dev --optimize-autoloader --no-interaction
 
+            echo "10. Running migrations"
             php artisan migrate --force
+            echo "11. Caching config/route/view"
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
+            echo "12. Linking storage"
             rm -rf public/storage
-            ln -snf "$APP_PATH/storage/app/public" "$APP_PATH/public/storage"
+            ln -snf "$(pwd)/storage/app/public" "$(pwd)/public/storage"
             echo "Deploy complete"

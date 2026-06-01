@@ -1,17 +1,9 @@
 @extends('layouts.pos')
+@php $backUrl = route('pos.index'); @endphp
 
 @section('content')
 
 <div class="flex flex-col gap-2 p-1" x-data="{ selectedOptions: [] }">
-
-    {{-- Header --}}
-    <header class="flex gap-2 items-center shrink-0">
-        <a href="{{ route('pos.index') }}"
-           class="w-10 h-10 rounded-xl bg-white border-4 border-dark flex items-center justify-center font-bold text-xl shrink-0 active:translate-y-1 transition-transform">←</a>
-        <div class="flex-1 bg-white px-3 py-2 rounded-full border-4 border-dark text-center">
-            <h1 class="font-black uppercase text-dark font-titan" style="font-size: clamp(1rem, 4vw, 2rem);">{{ $category->name }}</h1>
-        </div>
-    </header>
 
     {{-- Grille produits auto-adaptative --}}
     @php $colors = ['bg-primary','bg-paper','bg-accent','bg-muted']; @endphp

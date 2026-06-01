@@ -29,6 +29,12 @@
                 <span>Voir la commande</span>
                 <span x-show="cart.length > 0" class="bg-dark text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-black" x-text="cart.length"></span>
             </button>
+            @isset($backUrl)
+            <a href="{{ $backUrl }}"
+               class="w-32 bg-white border-4 border-dark font-black uppercase text-xs px-4 py-3 rounded-xl shadow-[3px_3px_0_#231F20] active:translate-y-1 transition-transform text-center">
+                ← Retour
+            </a>
+            @endisset
 
             {{-- Overlay plein écran --}}
             <div x-show="open" x-transition
@@ -76,6 +82,12 @@
                     <span>Voir la commande</span>
                     <span x-show="cart.length > 0" class="bg-dark text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-black" x-text="cart.length"></span>
                 </button>
+                @isset($backUrl)
+                <a href="{{ $backUrl }}"
+                   class="bg-white border-4 border-dark font-black uppercase text-xs px-5 py-2 rounded-xl shadow-[3px_3px_0_#231F20] active:translate-y-1 transition-transform">
+                    ← Retour
+                </a>
+                @endisset
             </div>
 
             {{-- Overlay plein écran --}}

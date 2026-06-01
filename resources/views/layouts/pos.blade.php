@@ -20,47 +20,45 @@
             @yield('content')
         </main>
 
-        {{-- Desktop : panneau panier complet --}}
-        <aside class="hidden md:flex w-1/4 h-full bg-paper border-l-4 border-dark flex-col justify-between p-6">
-            <div class="flex justify-between items-center pb-4 border-b-4 border-dark">
-                <h2 class="font-black uppercase tracking-widest text-2xl font-titan">Commande</h2>
-                <button @click="clearCart()" class="text-xs uppercase font-black bg-primary text-white px-4 py-2 border-2 border-dark active:translate-y-1">
-                    Vider
+        {{-- Desktop : panneau panier simplifié --}}
+        <aside class="hidden md:flex w-72 h-full bg-paper border-l-4 border-dark flex-col" x-data="{ open: false }">
+
+            {{-- En-tête fixe : Commande + total + bouton --}}
+            <div class="shrink-0 p-5 border-b-4 border-dark flex items-center justify-between gap-3">
+                <div>
+                    <p class="font-black uppercase text-xs tracking-widest text-gray-400">Commande</p>
+                    <p class="font-black text-2xl leading-tight" x-text="formatTotal()"></p>
+                </div>
+                <button @click="open = !open"
+                        class="bg-accent border-4 border-dark font-black uppercase text-xs px-3 py-2 rounded-xl shadow-[3px_3px_0_#231F20] active:translate-y-1 transition-transform flex items-center gap-1">
+                    <span x-text="open ? '✕ Fermer' : 'Voir'"></span>
+                    <span x-show="cart.length > 0" class="bg-dark text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-black" x-text="cart.length"></span>
                 </button>
             </div>
 
-            <div class="flex-1 overflow-y-auto py-6 space-y-4">
+            {{-- Détail (affiché si open) --}}
+            <div x-show="open" x-transition class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
                 <template x-for="(item, index) in cart" :key="item.uniqueId">
-                    <div class="bg-white p-4 border-4 border-dark">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <div class="font-black text-2xl font-titan">
-                                    <span x-text="item.name"></span>
-                                    <span x-show="item.quantity > 1" class="ml-2 bg-primary text-white text-sm px-3 py-0.5 rounded-full" x-text="'x' + item.quantity"></span>
-                                </div>
-                                <div class="text-lg text-gray-600 mt-1" x-text="formatCurrency(item.unit_total)"></div>
-                                <template x-for="opt in item.options">
-                                    <div class="text-sm text-accent font-black mt-1 uppercase">+ <span x-text="opt.name"></span></div>
-                                </template>
-                            </div>
-                            <button @click="removeItem(index)" class="text-primary font-black text-3xl px-2 hover:scale-110">×</button>
+                    <div class="bg-white p-3 border-2 border-dark flex justify-between items-center rounded-lg">
+                        <div>
+                            <span class="font-black text-sm uppercase" x-text="item.name"></span>
+                            <span x-show="item.quantity > 1" class="ml-1 bg-primary text-white text-xs px-2 py-0.5 rounded-full" x-text="'×' + item.quantity"></span>
+                            <div class="text-xs text-gray-500" x-text="formatCurrency(item.unit_total)"></div>
+                            <template x-for="opt in item.options">
+                                <div class="text-xs text-accent font-black uppercase">+ <span x-text="opt.name"></span></div>
+                            </template>
                         </div>
+                        <button @click="removeItem(index)" class="text-primary font-black text-2xl px-2 leading-none">×</button>
                     </div>
                 </template>
-                <div x-show="cart.length === 0" class="h-full flex flex-col items-center justify-center text-center opacity-40">
-                    <span class="text-lg font-black uppercase tracking-wider">Panier vide</span>
-                </div>
-            </div>
+                <div x-show="cart.length === 0" class="text-center text-xs font-black uppercase opacity-40 py-4">Panier vide</div>
 
-            <div class="pt-6 border-t-4 border-dark space-y-4">
-                <div class="flex justify-between items-baseline">
-                    <span class="text-lg uppercase font-black">Total :</span>
-                    <span class="text-4xl font-black tracking-tighter" x-text="formatTotal()">0,00 €</span>
+                <div x-show="cart.length > 0" class="pt-1 pb-2">
+                    <button @click="clearCart(); open = false"
+                            class="w-full text-xs uppercase font-black bg-primary text-white py-2 border-2 border-dark rounded-lg active:translate-y-1">
+                        Vider
+                    </button>
                 </div>
-                <button @click="validateOrder()" :disabled="cart.length === 0"
-                        class="w-full bg-accent text-dark font-black uppercase tracking-widest text-center py-4 border-4 border-dark disabled:opacity-30 transition-all hover:scale-[1.02] active:translate-y-1">
-                    Valider →
-                </button>
             </div>
         </aside>
 

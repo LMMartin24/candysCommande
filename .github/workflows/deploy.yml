@@ -29,33 +29,16 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy via SCP
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          server-dir: ./domains/candys-commande.skopee.fr/public_html/
-          local-dir: ./
-          exclude: |
-            **/.git*
-            .git/**
-            **/.git/**
-            **/.github/**
-            **/node_modules/**
-            **/vendor/**
-            **/.env
-            **/.env.*
-            **/storage/logs/**
-            **/storage/pail/**
-            **/storage/framework/sessions/**
-            **/storage/framework/cache/**
-            **/database/database.sqlite
-            **/tests/**
-            **/.vscode/**
-            **/.idea/**
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "app,bootstrap,config,database,public,resources,routes,storage,artisan,composer.json,composer.lock,.env.example"
+          target: "~/domains/candys-commande.skopee.fr/public_html/"
+          overwrite: true
 
       - name: Run post-deploy commands via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -68,39 +51,22 @@ jobs:
           script: |
             set -e
             DOMAIN_DIR="$HOME/domains/candys-commande.skopee.fr"
-
             if [ ! -d "$DOMAIN_DIR" ]; then
               echo "Dossier du domaine introuvable: $DOMAIN_DIR"
               exit 1
             fi
-
-            cd "$DOMAIN_DIR"
-
-            if [ -f "artisan" ] && [ -f "composer.json" ]; then
-              APP_DIR="."
-            elif [ -f "public_html/artisan" ] && [ -f "public_html/composer.json" ]; then
-              APP_DIR="public_html"
-            else
-              echo "Aucun dossier Laravel valide trouvé"
-              pwd && ls -la
-              exit 1
-            fi
-
-            cd "$APP_DIR"
+            cd "$DOMAIN_DIR/public_html"
             APP_PATH="$(pwd)"
             echo "Resolved APP_PATH=$APP_PATH"
-
             composer install --no-dev --optimize-autoloader --no-interaction
-
             if [ ! -f .env ]; then
               cp .env.example .env
               php artisan key:generate --force
             fi
-
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
             rm -rf public/storage
             ln -snf "$APP_PATH/storage/app/public" "$APP_PATH/public/storage"
-            echo "✅ Deploy complete"
+            echo "Deploy complete"

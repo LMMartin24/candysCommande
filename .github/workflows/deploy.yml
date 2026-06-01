@@ -39,6 +39,8 @@ jobs:
           source: "app,bootstrap,config,database,public,resources,routes,storage,artisan,composer.json,composer.lock,.env.example,.htaccess"
           target: "~/domains/candys-commande.skopee.fr/public_html/"
           overwrite: true
+          timeout: 120s
+          command_timeout: 20m
 
       - name: Run post-deploy commands via SSH
         uses: appleboy/ssh-action@v1.0.3

@@ -37,20 +37,22 @@
                     <h2 class="font-black uppercase text-xl tracking-widest">Commande</h2>
                     <button @click="open = false" class="font-black text-2xl px-2 leading-none text-primary">✕</button>
                 </div>
-                <div class="flex-1 overflow-y-auto px-6 py-4 space-y-3">
-                    <template x-for="(item, index) in cart" :key="item.uniqueId">
-                        <div class="bg-white p-4 border-2 border-dark flex justify-between items-center rounded-lg">
-                            <div>
-                                <span class="font-black text-base uppercase" x-text="item.name"></span>
-                                <span x-show="item.quantity > 1" class="ml-1 bg-primary text-white text-xs px-2 py-0.5 rounded-full" x-text="'×' + item.quantity"></span>
-                                <div class="text-sm text-gray-500" x-text="formatCurrency(item.unit_total)"></div>
-                                <template x-for="opt in item.options">
-                                    <div class="text-xs text-accent font-black uppercase">+ <span x-text="opt.name"></span></div>
-                                </template>
+                <div class="flex-1 overflow-y-auto px-6 py-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <template x-for="(item, index) in cart" :key="item.uniqueId">
+                            <div class="bg-white p-4 border-2 border-dark flex justify-between items-center rounded-lg">
+                                <div>
+                                    <span class="font-black text-base uppercase" x-text="item.name"></span>
+                                    <span x-show="item.quantity > 1" class="ml-1 bg-primary text-white text-xs px-2 py-0.5 rounded-full" x-text="'×' + item.quantity"></span>
+                                    <div class="text-sm text-gray-500" x-text="formatCurrency(item.unit_total)"></div>
+                                    <template x-for="opt in item.options">
+                                        <div class="text-xs text-accent font-black uppercase">+ <span x-text="opt.name"></span></div>
+                                    </template>
+                                </div>
+                                <button @click="removeItem(index)" class="text-primary font-black text-3xl px-2 leading-none">×</button>
                             </div>
-                            <button @click="removeItem(index)" class="text-primary font-black text-3xl px-2 leading-none">×</button>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                     <div x-show="cart.length === 0" class="text-center font-black uppercase opacity-40 py-8">Panier vide</div>
                 </div>
                 <div class="shrink-0 px-6 py-4 border-t-4 border-dark flex justify-between items-center">
@@ -83,17 +85,19 @@
                     <h2 class="font-black uppercase text-xl tracking-widest">Commande</h2>
                     <button @click="open = false" class="font-black text-2xl px-2 leading-none text-primary">✕</button>
                 </div>
-                <div class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-                    <template x-for="(item, index) in cart" :key="item.uniqueId">
-                        <div class="bg-white p-3 border-2 border-dark flex justify-between items-center rounded-lg">
-                            <div>
-                                <span class="font-black text-sm uppercase" x-text="item.name"></span>
-                                <span x-show="item.quantity > 1" class="ml-1 bg-primary text-white text-xs px-2 py-0.5 rounded-full" x-text="'×' + item.quantity"></span>
-                                <div class="text-xs text-gray-500" x-text="formatCurrency(item.unit_total)"></div>
+                <div class="flex-1 overflow-y-auto px-4 py-3">
+                    <div class="grid grid-cols-1 landscape:grid-cols-2 gap-3">
+                        <template x-for="(item, index) in cart" :key="item.uniqueId">
+                            <div class="bg-white p-3 border-2 border-dark flex justify-between items-center rounded-lg">
+                                <div>
+                                    <span class="font-black text-sm uppercase" x-text="item.name"></span>
+                                    <span x-show="item.quantity > 1" class="ml-1 bg-primary text-white text-xs px-2 py-0.5 rounded-full" x-text="'×' + item.quantity"></span>
+                                    <div class="text-xs text-gray-500" x-text="formatCurrency(item.unit_total)"></div>
+                                </div>
+                                <button @click="removeItem(index)" class="text-primary font-black text-2xl px-2 leading-none">×</button>
                             </div>
-                            <button @click="removeItem(index)" class="text-primary font-black text-2xl px-2 leading-none">×</button>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                     <div x-show="cart.length === 0" class="text-center text-sm font-black uppercase opacity-40 py-8">Panier vide</div>
                 </div>
                 <div class="shrink-0 px-4 py-4 border-t-4 border-dark flex justify-between items-center">

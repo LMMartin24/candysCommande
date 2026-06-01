@@ -39,6 +39,8 @@ jobs:
           local-dir: ./
           exclude: |
             **/.git*
+            .git/**
+            **/.git/**
             **/.github/**
             **/node_modules/**
             **/vendor/**

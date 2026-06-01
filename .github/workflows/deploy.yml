@@ -53,11 +53,16 @@ jobs:
             APP_PATH="$(pwd)"
             echo "APP_PATH=$APP_PATH"
 
-            # Create .env if missing (|| avoids negative condition with set -e)
+            # Create .env if missing
             [ -f .env ] || cp .env.example .env
 
-            # Fix APP_NAME quoting if unquoted (sed exits 0 even with no match)
-            sed -i 's/^APP_NAME=Candys Commande$/APP_NAME="Candys Commande"/' .env
+            # Inject MySQL credentials from GitHub secrets
+            sed -i "s|^DB_CONNECTION=.*|DB_CONNECTION=mysql|" .env
+            sed -i "s|^DB_HOST=.*|DB_HOST=127.0.0.1|" .env
+            sed -i "s|^DB_PORT=.*|DB_PORT=3306|" .env
+            sed -i "s|^DB_DATABASE=.*|DB_DATABASE=${{ secrets.DB_DATABASE }}|" .env
+            sed -i "s|^DB_USERNAME=.*|DB_USERNAME=${{ secrets.DB_USERNAME }}|" .env
+            sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=${{ secrets.DB_PASSWORD }}|" .env
 
             # Generate app key only if not already set
             grep -q "^APP_KEY=base64:" .env || php artisan key:generate --force
@@ -77,4 +82,4 @@ jobs:
             rm -rf public/storage
             ln -snf "$APP_PATH/storage/app/public" "$APP_PATH/public/storage"
 
-            echo "✅ Deploy complete"
+            echo "Deploy complete"

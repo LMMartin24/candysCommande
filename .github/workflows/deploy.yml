@@ -1,0 +1,97 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install JS dependencies
+        run: npm install
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ./
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
+            **/vendor/**
+            **/.env
+            **/.env.*
+            **/storage/logs/**
+            **/storage/pail/**
+            **/storage/framework/sessions/**
+            **/storage/framework/cache/**
+            **/database/database.sqlite
+            **/tests/**
+            **/.vscode/**
+            **/.idea/**
+
+      - name: Run post-deploy commands via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            set -e
+            if [ -f "artisan" ] && [ -f "composer.json" ]; then
+              APP_DIR="."
+            elif [ -f "public_html/artisan" ] && [ -f "public_html/composer.json" ]; then
+              APP_DIR="public_html"
+            else
+              echo "Aucun dossier Laravel valide trouvé (attendu: ./ ou ./public_html)"
+              pwd
+              ls -la
+              exit 1
+            fi
+
+            cd "$APP_DIR"
+            APP_PATH="$(pwd)"
+            echo "Resolved APP_PATH=$APP_PATH"
+            test -f composer.json || (echo "composer.json introuvable dans $APP_PATH" && exit 1)
+            test -f artisan || (echo "artisan introuvable dans $APP_PATH" && exit 1)
+
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            if [ ! -f .env ]; then
+              cp .env.example .env
+              php artisan key:generate --force
+            fi
+
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            rm -rf public/storage
+            ln -snf "$APP_PATH/storage/app/public" "$APP_PATH/public/storage"
+            echo "✅ Deploy complete"

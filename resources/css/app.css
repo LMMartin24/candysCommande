@@ -1,11 +1,31 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+html, body {
+    overscroll-behavior-y: contain;
+    -webkit-tap-highlight-color: transparent;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* Remove unintended text shadows and text-related filters on textual elements */
+body, h1, h2, h3, h4, h5, h6, p, span, a, button, label, input, textarea {
+    text-shadow: none !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+}
+
+/* POS grid: limit height to viewport minus header area and ensure cards fill cells */
+.pos-grid {
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+}
+.pos-grid > * {
+    height: 100%;
+}
+.pos-grid a {
+    display: block;
+    height: 100%;
+}
+.pos-card-media {
+    overflow: hidden;
 }

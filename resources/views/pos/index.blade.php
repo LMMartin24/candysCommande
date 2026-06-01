@@ -4,8 +4,8 @@
 
 <div class="md:h-full flex flex-col font-sans">
 
-    {{-- Navbar masquée sur mobile --}}
-    <header class="hidden md:flex mb-6 justify-between items-center bg-white p-4 rounded-3xl border-4 border-dark">
+    {{-- Navbar visible uniquement sur desktop portrait --}}
+    <header class="hidden portrait:md:flex mb-6 justify-between items-center bg-white p-4 rounded-3xl border-4 border-dark">
         <h1 class="text-3xl font-black uppercase tracking-widest text-dark">Candys</h1>
         <div class="flex items-center gap-3">
             <span class="text-sm font-bold text-gray-500 uppercase">Service</span>
@@ -42,7 +42,7 @@
 
                 <div class="flex flex-col h-full p-2 md:p-6 bg-white/10 transition-colors group-hover:bg-white/20 rounded-xl md:rounded-[24px]">
                     {{-- Image masquée sur mobile --}}
-                    <div class="hidden md:flex flex-1 items-center justify-center overflow-hidden">
+                    <div class="hidden portrait:md:flex flex-1 items-center justify-center overflow-hidden">
                         <img src="{{ asset('img/' . $data['img']) }}"
                              alt="{{ $cat->name }}"
                              class="w-full h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-110 rounded-lg">

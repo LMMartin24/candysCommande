@@ -23,7 +23,7 @@
             $imgMap = ['Glaces'=>'glace.png', 'Crêpes & Gaufres'=>'gaufre.png', 'Chichis'=>'chichi.png', 'Boissons'=>'boisson.png', 'Café'=>'cafe.png', 'Sucettes'=>'sucettes.png'];
             $img = $imgMap[$category->name] ?? 'default.png';
         @endphp
-        <div class="hidden md:block rounded-[40px] border-4 border-dark overflow-hidden h-full">
+        <div class="hidden portrait:md:block rounded-[40px] border-4 border-dark overflow-hidden h-full">
             <div class="flex flex-col h-full p-6 bg-white/10 rounded-[30px]">
                 <h2 class="text-2xl font-black uppercase tracking-tight text-dark font-titan mb-4">{{ $category->name }}</h2>
                 <div class="flex-1 flex items-center justify-center overflow-hidden">

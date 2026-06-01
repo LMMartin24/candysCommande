@@ -64,38 +64,47 @@
             </div>
         </aside>
 
-        {{-- Mobile : barre basse avec total + valider + liste compacte --}}
+        {{-- Mobile : barre basse simplifiée --}}
         <div class="md:hidden shrink-0 bg-paper border-t-4 border-dark" x-data="{ open: false }">
-            {{-- Articles (affichés si open) --}}
-            <div x-show="open" x-transition class="max-h-48 overflow-y-auto px-3 py-2 space-y-2 border-b-4 border-dark">
+
+            {{-- Détail commande (affiché si open) --}}
+            <div x-show="open" x-transition class="max-h-56 overflow-y-auto px-3 py-2 space-y-2 border-b-4 border-dark">
                 <template x-for="(item, index) in cart" :key="item.uniqueId">
-                    <div class="bg-white p-2 border-2 border-dark flex justify-between items-center">
+                    <div class="bg-white p-2 border-2 border-dark flex justify-between items-center rounded-lg">
                         <div>
                             <span class="font-black text-sm uppercase" x-text="item.name"></span>
-                            <span x-show="item.quantity > 1" class="ml-1 bg-primary text-white text-xs px-2 py-0.5 rounded-full" x-text="'x' + item.quantity"></span>
+                            <span x-show="item.quantity > 1" class="ml-1 bg-primary text-white text-xs px-2 py-0.5 rounded-full" x-text="'×' + item.quantity"></span>
                             <div class="text-xs text-gray-500" x-text="formatCurrency(item.unit_total)"></div>
                         </div>
-                        <button @click="removeItem(index)" class="text-primary font-black text-2xl px-2">×</button>
+                        <button @click="removeItem(index)" class="text-primary font-black text-2xl px-2 leading-none">×</button>
                     </div>
                 </template>
                 <div x-show="cart.length === 0" class="text-center text-xs font-black uppercase opacity-40 py-2">Panier vide</div>
-            </div>
-            {{-- Barre fixe --}}
-            <div class="flex items-center justify-between gap-2 px-3 py-2">
-                <button @click="open = !open" class="flex items-center gap-2 font-black uppercase text-sm">
-                    <span class="bg-dark text-white text-xs px-2 py-0.5 rounded-full" x-text="cart.length" x-show="cart.length > 0"></span>
-                    <span x-text="open ? '▼ Fermer' : '▲ Panier'"></span>
-                </button>
-                <span class="font-black text-lg" x-text="formatTotal()"></span>
-                <div class="flex gap-2">
-                    <button @click="clearCart()" x-show="cart.length > 0" class="text-xs uppercase font-black bg-primary text-white px-3 py-2 border-2 border-dark active:translate-y-1">
+
+                {{-- Boutons action dans le détail --}}
+                <div x-show="cart.length > 0" class="flex gap-2 pt-1 pb-1">
+                    <button @click="clearCart(); open = false"
+                            class="flex-1 text-xs uppercase font-black bg-primary text-white py-2 border-2 border-dark rounded-lg active:translate-y-1">
                         Vider
                     </button>
-                    <button @click="validateOrder()" :disabled="cart.length === 0"
-                            class="bg-accent text-dark font-black uppercase text-sm px-4 py-2 border-4 border-dark disabled:opacity-30 active:translate-y-1">
+                    <button @click="validateOrder()"
+                            class="flex-1 bg-accent text-dark font-black uppercase text-xs py-2 border-4 border-dark rounded-lg active:translate-y-1">
                         Valider →
                     </button>
                 </div>
+            </div>
+
+            {{-- Barre fixe : Commande + total + voir la commande --}}
+            <div class="flex items-center justify-between gap-3 px-4 py-3">
+                <div>
+                    <p class="font-black uppercase text-xs tracking-widest text-gray-400">Commande</p>
+                    <p class="font-black text-xl leading-tight" x-text="formatTotal()"></p>
+                </div>
+                <button @click="open = !open"
+                        class="bg-accent border-4 border-dark font-black uppercase text-xs px-4 py-2 rounded-xl shadow-[3px_3px_0_#231F20] active:translate-y-1 transition-transform flex items-center gap-1">
+                    <span x-text="open ? '✕ Fermer' : 'Voir la commande'"></span>
+                    <span x-show="cart.length > 0" class="bg-dark text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-black" x-text="cart.length"></span>
+                </button>
             </div>
         </div>
     </div>

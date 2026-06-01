@@ -50,19 +50,20 @@ jobs:
           script_stop: true
           script: |
             set -e
-            DOMAIN_DIR="$HOME/domains/candys-commande.skopee.fr"
-            if [ ! -d "$DOMAIN_DIR" ]; then
-              echo "Dossier du domaine introuvable: $DOMAIN_DIR"
-              exit 1
-            fi
-            cd "$DOMAIN_DIR/public_html"
+            cd "$HOME/domains/candys-commande.skopee.fr/public_html"
             APP_PATH="$(pwd)"
-            echo "Resolved APP_PATH=$APP_PATH"
-            composer install --no-dev --optimize-autoloader --no-interaction
+            echo "APP_PATH=$APP_PATH"
+
             if [ ! -f .env ]; then
               cp .env.example .env
               php artisan key:generate --force
+            else
+              # Fix APP_NAME if unquoted (contains space without quotes)
+              sed -i 's/^APP_NAME=\([^"]\+[[:space:]]\+[^"]\+\)$/APP_NAME="\1"/' .env
             fi
+
+            composer install --no-dev --optimize-autoloader --no-interaction
+
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache

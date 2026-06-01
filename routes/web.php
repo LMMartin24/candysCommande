@@ -10,12 +10,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Route d'accueil : redirige automatiquement vers le POS si l'utilisateur est connecté
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('pos.index');
     }
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 // Tableau de bord par défaut de Laravel Breeze (Optionnel, gardé pour compatibilité)

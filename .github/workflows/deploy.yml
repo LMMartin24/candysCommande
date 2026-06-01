@@ -37,7 +37,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           port: 21
-          server-dir: ./public_html/
+          server-dir: ./domains/candys-commande.skopee.fr/public_html/
           local-dir: ./
           exclude: |
             **/.git*
@@ -67,23 +67,13 @@ jobs:
           script_stop: true
           script: |
             set -e
-            echo "=== HOME: $HOME ==="
-            echo "=== PWD initial: $(pwd) ==="
-            ls -la ~/ || true
-            ls -la ~/domains/ || true
+            DOMAIN_DIR="$HOME/domains/candys-commande.skopee.fr"
 
-            DOMAIN_DIR=""
-            if [ -d "$HOME/domains/candys-commande.skopee.fr" ]; then
-              DOMAIN_DIR="$HOME/domains/candys-commande.skopee.fr"
-            elif [ -d "/home/$USER/domains/candys-commande.skopee.fr" ]; then
-              DOMAIN_DIR="/home/$USER/domains/candys-commande.skopee.fr"
-            else
-              echo "=== Dossier du domaine introuvable, listage du home ==="
-              find ~ -maxdepth 4 -name "artisan" 2>/dev/null || true
+            if [ ! -d "$DOMAIN_DIR" ]; then
+              echo "Dossier du domaine introuvable: $DOMAIN_DIR"
               exit 1
             fi
 
-            echo "=== DOMAIN_DIR: $DOMAIN_DIR ==="
             cd "$DOMAIN_DIR"
 
             if [ -f "artisan" ] && [ -f "composer.json" ]; then

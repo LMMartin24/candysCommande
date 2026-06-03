@@ -11,9 +11,9 @@
         @foreach($products as $i => $product)
             <button @click="addItem({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->base_price }}, [...selectedOptions]); selectedOptions = []"
                     class="rounded-2xl border-4 border-dark {{ $colors[$i % 4] }} flex flex-col items-center justify-center p-2 gap-1 active:translate-y-1 transition-transform shadow-[4px_4px_0_#231F20]">
-                <span class="font-black uppercase text-dark font-titan italic text-center leading-tight"
+                <span class="font-black uppercase text-white font-titan italic text-center leading-tight"
                       style="font-size: clamp(1rem, 4vw, 2rem);">{{ $product->name }}</span>
-                <span class="bg-white/80 px-2 py-0.5 rounded-lg border-2 border-dark font-black"
+                <span class="bg-white px-2 py-0.5 rounded-lg border-2 border-dark font-black text-dark"
                       style="font-size: clamp(0.85rem, 2.5vw, 1.25rem);">{{ number_format($product->base_price / 100, 2, ',', ' ') }} €</span>
             </button>
         @endforeach

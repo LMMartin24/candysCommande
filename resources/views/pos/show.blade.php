@@ -6,11 +6,21 @@
 <div class="flex flex-col gap-2 p-1 flex-1" x-data="{ selectedOptions: [] }">
 
     {{-- Grille produits 2x2 --}}
-    @php $colors = ['bg-primary','bg-paper','bg-accent','bg-muted']; @endphp
+    @php
+        $colorMap = [
+            'Glaces'           => 'bg-primary',
+            'Crêpes & Gaufres' => 'bg-accent',
+            'Chichis'          => 'bg-paper',
+            'Boissons'         => 'bg-muted',
+            'Café'             => 'bg-accent',
+            'Sucettes'         => 'bg-primary',
+        ];
+        $cardColor = $colorMap[$category->name] ?? 'bg-accent';
+    @endphp
     <div class="grid grid-cols-2 gap-2 flex-1" style="grid-auto-rows: 1fr;">
-        @foreach($products as $i => $product)
+        @foreach($products as $product)
             <button @click="addItem({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->base_price }}, [...selectedOptions]); selectedOptions = []"
-                    class="rounded-2xl border-4 border-dark {{ $colors[$i % 4] }} flex flex-col items-center justify-center p-2 gap-1 active:translate-y-1 transition-transform shadow-[4px_4px_0_#231F20]">
+                    class="rounded-2xl border-4 border-dark {{ $cardColor }} flex flex-col items-center justify-center p-2 gap-1 active:translate-y-1 transition-transform shadow-[4px_4px_0_#231F20]">
                 <span class="font-black uppercase text-white font-titan italic text-center leading-tight"
                       style="font-size: clamp(1rem, 4vw, 2rem);">{{ $product->name }}</span>
                 <span class="bg-white px-2 py-0.5 rounded-lg border-2 border-dark font-black text-dark"

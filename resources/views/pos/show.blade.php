@@ -3,19 +3,18 @@
 
 @section('content')
 
-<div class="flex flex-col gap-2 p-1" x-data="{ selectedOptions: [] }">
+<div class="flex flex-col gap-2 p-1 flex-1" x-data="{ selectedOptions: [] }">
 
-    {{-- Grille produits auto-adaptative --}}
+    {{-- Grille produits 2x2 --}}
     @php $colors = ['bg-primary','bg-paper','bg-accent','bg-muted']; @endphp
-    <div class="grid gap-2"
-         style="grid-template-columns: repeat(auto-fit, minmax(min(10rem, 45vw), 1fr)); grid-auto-rows: minmax(5rem, 1fr);">
+    <div class="grid grid-cols-2 gap-2 flex-1" style="grid-auto-rows: 1fr;">
         @foreach($products as $i => $product)
             <button @click="addItem({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->base_price }}, [...selectedOptions]); selectedOptions = []"
-                    class="rounded-2xl border-4 border-dark {{ $colors[$i % 4] }} flex flex-col items-center justify-center p-3 gap-1 active:translate-y-1 transition-transform shadow-[4px_4px_0_#231F20]">
+                    class="rounded-2xl border-4 border-dark {{ $colors[$i % 4] }} flex flex-col items-center justify-center p-2 gap-1 active:translate-y-1 transition-transform shadow-[4px_4px_0_#231F20]">
                 <span class="font-black uppercase text-dark font-titan italic text-center leading-tight"
-                      style="font-size: clamp(0.9rem, 3.5vw, 1.75rem);">{{ $product->name }}</span>
+                      style="font-size: clamp(1rem, 4vw, 2rem);">{{ $product->name }}</span>
                 <span class="bg-white/80 px-2 py-0.5 rounded-lg border-2 border-dark font-black"
-                      style="font-size: clamp(0.8rem, 3vw, 1.25rem);">{{ number_format($product->base_price / 100, 2, ',', ' ') }} €</span>
+                      style="font-size: clamp(0.85rem, 2.5vw, 1.25rem);">{{ number_format($product->base_price / 100, 2, ',', ' ') }} €</span>
             </button>
         @endforeach
     </div>

@@ -16,7 +16,7 @@
 
     <div class="flex h-full w-full overflow-hidden flex-col md:flex-row">
 
-        <main class="flex-1 min-h-0 p-2 md:p-6 overflow-y-auto">
+        <main class="flex-1 min-h-0 p-2 md:p-6 overflow-y-auto flex flex-col">
             @yield('content')
         </main>
 

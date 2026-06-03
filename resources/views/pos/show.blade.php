@@ -28,7 +28,7 @@
                  style="grid-template-columns: repeat(auto-fit, minmax(min(8rem, 45vw), 1fr));">
                 @foreach($allOptions as $option)
                     <button @click="const o={id:{{ $option->id }},name:'{{ addslashes($option->name) }}',additional_price:{{ $option->additional_price }}};const i=selectedOptions.findIndex(x=>x.id===o.id);i>-1?selectedOptions.splice(i,1):selectedOptions.push(o)"
-                            :class="selectedOptions.find(x=>x.id==={{ $option->id }})?'bg-dark text-white':'bg-paper text-dark'"
+                            :class="selectedOptions.find(x=>x.id==={{ $option->id }})?'bg-primary text-white':'bg-paper text-dark'"
                             class="border-4 border-dark px-2 py-2 font-black uppercase text-xs flex items-center justify-between gap-1 active:translate-y-1 transition-transform rounded-xl">
                         <span>+ {{ $option->name }}</span>
                         <span class="bg-white/50 px-1 rounded font-bold">+{{ number_format($option->additional_price / 100, 2, ',', ' ') }}€</span>

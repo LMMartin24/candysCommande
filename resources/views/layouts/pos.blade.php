@@ -27,7 +27,7 @@
             <button @click="open = true"
                     class="bg-accent border-4 border-dark font-black uppercase text-xs px-4 py-3 rounded-xl shadow-[3px_3px_0_#231F20] active:translate-y-1 transition-transform flex flex-col items-center gap-1 w-32">
                 <span>Voir la commande</span>
-                <span x-show="cart.length > 0" class="bg-dark text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-black" x-text="cart.length"></span>
+                <span x-show="cart.length > 0" class="bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-black" x-text="cart.length"></span>
             </button>
             @isset($backUrl)
             <a href="{{ $backUrl }}"
@@ -80,7 +80,7 @@
                 <button @click="open = true"
                         class="bg-accent border-4 border-dark font-black uppercase text-xs px-5 py-2 rounded-xl shadow-[3px_3px_0_#231F20] active:translate-y-1 transition-transform flex items-center gap-2">
                     <span>Voir la commande</span>
-                    <span x-show="cart.length > 0" class="bg-dark text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-black" x-text="cart.length"></span>
+                    <span x-show="cart.length > 0" class="bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-black" x-text="cart.length"></span>
                 </button>
                 @isset($backUrl)
                 <a href="{{ $backUrl }}"

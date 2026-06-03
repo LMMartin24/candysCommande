@@ -17,7 +17,7 @@
     @endphp
 
     @foreach($categories as $cat)
-        @php $bg = $map[$cat->name] ?? 'bg-dark'; @endphp
+        @php $bg = $map[$cat->name] ?? 'bg-primary'; @endphp
         <a href="{{ route('pos.show', $cat->id) }}"
            class="rounded-2xl border-4 border-dark {{ $bg }} flex items-center justify-center p-3 active:translate-y-1 transition-transform shadow-[4px_4px_0_#231F20]">
             <h2 class="font-black uppercase text-center text-dark font-titan leading-tight"
